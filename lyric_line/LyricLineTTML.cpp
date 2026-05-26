@@ -23,9 +23,10 @@ std::pair<LyricLine, LyricLine::Status> LyricLine::fromTTML(const QDomElement &p
         const auto end = LyricTime::parse(p.attribute("end"));
         if (!end.second) return {{}, Status::InvalidTimeFormat};
         line._end = end.first;
-        line._agent = p.attribute("ttm:agent");
         line._key = p.attribute(p.tagName() == "text" ? "for" : "itunes:key");
     }
+
+    if (p.hasAttribute("ttm:agent")) line._agent = p.attribute("ttm:agent");
 
     const auto span_s = p.childNodes();
     for (int i = 0; i < span_s.count(); ++i) {
@@ -146,7 +147,8 @@ QString LyricLine::toInnerTTML(const bool xmlns) const {
     }
     auto ret = text.join("");
     if (this->_bg_line)
-        ret += QString(R"( <span ttm:role="x-bg"%1>%2</span>)")
+        ret += QString(R"( <span ttm:role="x-bg"%1%2>%3</span>)")
+        .arg(this->_bg_line->_agent.isEmpty() ? "" : QString(R"( ttm:agent="%1")").arg(this->_bg_line->_agent))
         .arg(xmlns ? R"( xmlns:ttm="http://www.w3.org/ns/ttml#metadata" xmlns="http://www.w3.org/ns/ttml")" : "")
         .arg(this->_bg_line->toInnerTTML());
     return ret;
