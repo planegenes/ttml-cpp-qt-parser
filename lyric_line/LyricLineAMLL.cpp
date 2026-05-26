@@ -67,6 +67,8 @@ QString LyricLine::toAMLL() const {
             .arg(context));
     }
 
+    if (this->_bg_line) sub_line_list.append(this->_bg_line->toAMLL());
+
     return QString(R"(<%1%2 begin="%3" end="%4">%5</%1>)")
     .arg(this->_is_bg ? "span" : "p")
     .arg(this->_is_bg ? R"( ttm:role="x-bg")" : QString(R"( ttm:agent="v%1" itunes:key="%2")").arg(this->_is_duet ? 2 : 1).arg(this->_key))
